@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Juego del Reciclaje — proyecto en Scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ev:#FFBF00; --ctrl:#FFAB19; --mot:#4C97FF; --look:#9966FF;
+  --var:#FF8C1A; --sens:#5CB1D6; --op:#59C059;
+  --ink:#2B3A55; --ink-soft:#5B6B87; --line:#D6E0EE;
+  --paper:#FFFFFF; --bg:#EDF2F9; --bg-2:#E2EBF6;
+  --accent:#1FA97A;
+  --r:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Inter,system-ui,sans-serif; font-size:16px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Bricolage Grotesque',Inter,sans-serif; line-height:1.12; margin:0; letter-spacing:-.02em}
+a{color:var(--accent)}
+.wrap{max-width:920px; margin:0 auto; padding:0 24px}
+
+/* ---------- hero ---------- */
+header.hero{
+  background:linear-gradient(170deg,#F7FAFF 0%,var(--bg-2) 100%);
+  border-bottom:1px solid var(--line); padding:64px 0 56px; position:relative; overflow:hidden;
+}
+.eyebrow{
+  font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-soft); margin-bottom:18px;
+}
+h1{font-size:clamp(38px,7vw,68px); font-weight:800}
+h1 em{font-style:normal; color:var(--accent)}
+.lede{font-size:clamp(17px,2.3vw,20px); color:var(--ink-soft); max-width:52ch; margin:20px 0 0}
+.hero-blocks{margin-top:38px; display:flex; gap:10px; flex-wrap:wrap}
+.hero-blocks .block{animation:drop .5s cubic-bezier(.2,.8,.3,1) backwards}
+.hero-blocks .block:nth-child(2){animation-delay:.09s}
+.hero-blocks .block:nth-child(3){animation-delay:.18s}
+.hero-blocks .block:nth-child(4){animation-delay:.27s}
+@keyframes drop{from{opacity:0; transform:translateY(-14px)}}
+
+/* ---------- nav ---------- */
+nav.toc{
+  position:sticky; top:0; z-index:20; background:rgba(237,242,249,.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+}
+nav.toc ul{list-style:none; display:flex; gap:4px; margin:0; padding:0; overflow-x:auto;
+  max-width:920px; margin:0 auto; padding:0 18px}
+nav.toc a{
+  display:block; padding:13px 12px; font-size:13.5px; font-weight:500;
+  color:var(--ink-soft); text-decoration:none; white-space:nowrap;
+  border-bottom:2px solid transparent;
+}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--ink); border-bottom-color:var(--accent)}
+
+/* ---------- sections ---------- */
+section{padding:60px 0 12px}
+.snum{
+  font-family:'Bricolage Grotesque'; font-size:13px; font-weight:800; color:var(--accent);
+  letter-spacing:.1em; display:block; margin-bottom:6px;
+}
+h2{font-size:clamp(26px,4vw,36px); font-weight:800; margin-bottom:14px}
+h3{font-size:19px; font-weight:600; margin:34px 0 12px}
+p{margin:0 0 14px; max-width:66ch}
+.muted{color:var(--ink-soft)}
+
+/* ---------- cards ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:18px 0 8px}
+.card{
+  background:var(--paper); border:1px solid var(--line); border-radius:var(--r);
+  padding:16px 18px;
+}
+.card .k{font-weight:600; font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:5px}
+.card .v{font-size:14.5px; color:var(--ink-soft); line-height:1.55}
+.chip{
+  display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+  border-radius:7px; font-size:14px; background:var(--bg-2); flex:none;
+}
+
+/* steps */
+ol.steps{counter-reset:s; list-style:none; padding:0; margin:16px 0}
+ol.steps li{
+  counter-increment:s; position:relative; padding:0 0 0 42px; margin-bottom:12px;
+  max-width:66ch;
+}
+ol.steps li::before{
+  content:counter(s); position:absolute; left:0; top:1px;
+  width:26px; height:26px; border-radius:50%; background:var(--accent); color:#fff;
+  font-size:13px; font-weight:600; display:grid; place-items:center;
+}
+
+/* ---------- scratch blocks ---------- */
+.script{
+  background:var(--paper); border:1px solid var(--line); border-radius:var(--r);
+  padding:20px 20px 22px; margin:14px 0 26px; overflow-x:auto;
+}
+.script-cap{
+  font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-soft); margin-bottom:14px;
+}
+.stack{display:flex; flex-direction:column; align-items:flex-start; gap:0}
+.block{
+  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:13.5px; font-weight:700;
+  color:#fff; padding:8px 14px; border-radius:5px; position:relative;
+  display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap;
+  min-height:34px; margin-bottom:2px; box-shadow:0 1px 0 rgba(0,0,0,.12);
+  text-shadow:0 1px 0 rgba(0,0,0,.12); white-space:nowrap;
+}
+.block.hat{border-radius:16px 16px 5px 5px; padding-top:12px}
+.b-ev{background:var(--ev)} .b-ctrl{background:var(--ctrl)} .b-mot{background:var(--mot)}
+.b-look{background:var(--look)} .b-var{background:var(--var)} .b-sens{background:var(--sens)}
+.b-op{background:var(--op)}
+.rep{
+  background:rgba(0,0,0,.16); border-radius:999px; padding:2px 9px; font-size:12.5px;
+  display:inline-block; text-shadow:none;
+}
+.rep.num{background:#fff; color:var(--ink); border-radius:999px}
+.rep.bool{
+  background:var(--op); border-radius:999px; padding:3px 12px; color:#fff;
+  box-shadow:0 1px 0 rgba(0,0,0,.15);
+}
+.rep.varname{background:var(--var); border-radius:999px; padding:2px 10px; color:#fff}
+.rep.menu{background:rgba(0,0,0,.2); border-radius:999px; padding:2px 10px}
+
+/* C blocks */
+.cblock{display:flex; flex-direction:column; align-items:flex-start; margin-bottom:2px}
+.cbody{border-left:14px solid var(--ctrl); padding:4px 0 4px 10px; margin-left:0; align-self:stretch}
+.cbody .stack{align-items:flex-start}
+.cfoot{height:12px; width:64px; background:var(--ctrl); border-radius:0 5px 5px 5px}
+.cmid{
+  background:var(--ctrl); color:#fff; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-weight:700; font-size:13.5px; padding:7px 16px; border-radius:0 5px 5px 0;
+  text-shadow:0 1px 0 rgba(0,0,0,.12);
+}
+
+/* legend */
+.legend{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 4px}
+.legend span{
+  font-size:12px; font-weight:600; color:#fff; padding:5px 11px; border-radius:999px;
+  text-shadow:0 1px 0 rgba(0,0,0,.12);
+}
+
+/* ---------- simulator (signature) ---------- */
+.sim{
+  background:var(--paper); border:1px solid var(--line);
+  border-radius:16px; padding:24px; margin:22px 0 8px;
+}
+.sim-stage{
+  background:linear-gradient(180deg,#F5F9FF,#E8F1FA); border-radius:12px;
+  border:1px solid var(--line); padding:22px; text-align:center; margin-bottom:18px;
+}
+.sim-res{font-size:52px; line-height:1; margin-bottom:8px; display:block}
+.sim-label{font-size:14px; color:var(--ink-soft)}
+.sim-label b{color:var(--ink)}
+.btn{
+  font:inherit; font-weight:600; font-size:14.5px; cursor:pointer;
+  background:var(--accent); color:#fff; border:none; border-radius:9px;
+  padding:11px 20px; transition:filter .15s;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible{outline:3px solid #93D8C0; outline-offset:2px}
+.btn.ghost{background:var(--paper); color:var(--ink); border:1px solid var(--line)}
+.bins{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; margin:14px 0}
+.bin{
+  font:inherit; font-size:13.5px; font-weight:600; cursor:pointer; background:var(--paper);
+  border:1.5px solid var(--line); border-radius:10px; padding:12px 6px; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; gap:5px; transition:.15s;
+}
+.bin:hover:not(:disabled){border-color:var(--mot); transform:translateY(-2px)}
+.bin:disabled{opacity:.45; cursor:not-allowed}
+.bin em{font-size:22px; font-style:normal}
+.trace{margin-top:16px; font-size:13.5px}
+.trace-row{
+  display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px;
+  border:1px solid var(--line); margin-bottom:5px; background:#FAFCFF; color:var(--ink-soft);
+  transition:.2s;
+}
+.trace-row.on{background:#E6F7F0; border-color:var(--accent); color:var(--ink); font-weight:600}
+.trace-row.off{opacity:.5}
+.trace-row .mark{width:18px; flex:none; text-align:center; font-weight:700}
+.verdict{
+  margin-top:16px; padding:14px 18px; border-radius:10px; font-weight:600; font-size:15px;
+  display:none;
+}
+.verdict.win{display:block; background:#E6F7F0; color:#106B4E; border:1px solid #A6E3CB}
+.verdict.lose{display:block; background:#FDECEC; color:#9B2C2C; border:1px solid #F3C0C0}
+.sr-note{font-size:13px; color:var(--ink-soft); margin-top:10px}
+
+/* flow */
+.flow{display:flex; flex-direction:column; gap:0; margin:20px 0}
+.flow-step{
+  background:var(--paper); border:1px solid var(--line); border-left:4px solid var(--mot);
+  border-radius:8px; padding:13px 18px; font-size:14.5px;
+}
+.flow-arrow{color:var(--ink-soft); text-align:center; font-size:18px; line-height:1; padding:6px 0}
+
+/* concepts */
+.tags{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 8px}
+.tags span{
+  background:var(--paper); border:1px solid var(--line); border-radius:999px;
+  padding:8px 15px; font-size:14px;
+}
+
+footer{
+  margin-top:70px; border-top:1px solid var(--line); padding:28px 0 46px;
+  font-size:13.5px; color:var(--ink-soft);
+}
+@media (max-width:600px){
+  section{padding:44px 0 8px}
+  .script{padding:14px}
+  .block{font-size:12.5px; padding:7px 11px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important; transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Proyecto en Scratch · Documentación</span>
+    <h1>Juego del<br><em>Reciclaje</em></h1>
+    <p class="lede">Un juego donde hay que clasificar residuos en el contenedor correcto. Esta página explica cómo se juega y cómo está hecho por dentro, bloque por bloque.</p>
+    <div class="hero-blocks">
+      <div class="block hat b-ev">al presionar bandera verde</div>
+      <div class="block b-var">fijar <span class="rep varname">Residuo</span> a <span class="rep num">azar 1 a 5</span></div>
+      <div class="block b-look">cambiar disfraz a <span class="rep menu">papel</span></div>
+      <div class="block b-mot">mover <span class="rep num">10</span> pasos</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Secciones">
+  <ul>
+    <li><a href="#jugar">Cómo se juega</a></li>
+    <li><a href="#abrir">Abrir el proyecto</a></li>
+    <li><a href="#objetos">Objetos</a></li>
+    <li><a href="#datos">Variables y mensajes</a></li>
+    <li><a href="#codigo">El código</a></li>
+    <li><a href="#tecla-e">La tecla E</a></li>
+    <li><a href="#probar">Probar la lógica</a></li>
+    <li><a href="#ronda">La ronda</a></li>
+    <li><a href="#conceptos">Conceptos</a></li>
+  </ul>
+</nav>
+
+<main class="wrap">
+
+<section id="jugar">
+  <span class="snum">01</span>
+  <h2>Cómo se juega</h2>
+  <p>En la parte de abajo de la pantalla aparece un residuo elegido al azar: basura común, vidrio, orgánico, papel o plástico. Cada vez que empieza una ronda el residuo cambia, así que ninguna partida es igual a la anterior.</p>
+  <ol class="steps">
+    <li>Mover al personaje con las flechas <b>izquierda</b> y <b>derecha</b> del teclado. El residuo lo acompaña, como si lo llevara en la mano.</li>
+    <li>Llevarlo hasta el contenedor que corresponde al tipo de residuo que salió.</li>
+    <li>Presionar la tecla <b>E</b> para tirarlo.</li>
+    <li>Si el contenedor es el correcto, el residuo se desliza adentro, suma un punto y aparece uno nuevo. Si es el equivocado, el residuo se pone en su versión de error y el personaje avisa que ahí no se puede tirar.</li>
+  </ol>
+</section>
+
+<section id="abrir">
+  <span class="snum">02</span>
+  <h2>Abrir el proyecto</h2>
+  <p>El archivo que acompaña esta página termina en <b>.sb3</b>, que es el formato de los proyectos de Scratch.</p>
+  <ol class="steps">
+    <li>Entrar a <a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a> y hacer clic en <b>Crear</b>.</li>
+    <li>En el menú de arriba elegir <b>Archivo → Subir desde tu computadora</b>.</li>
+    <li>Seleccionar el archivo <b>.sb3</b> y esperar a que cargue.</li>
+    <li>Presionar la bandera verde para empezar a jugar.</li>
+  </ol>
+</section>
+
+<section id="objetos">
+  <span class="snum">03</span>
+  <h2>Los objetos</h2>
+  <p>El proyecto tiene siete objetos: el personaje, el residuo y los cinco contenedores.</p>
+  <div class="grid">
+    <div class="card"><div class="k"><span class="chip">🚶</span>persona</div><div class="v">El personaje que controla quien juega, con las flechas del teclado.</div></div>
+    <div class="card"><div class="k"><span class="chip">♻️</span>residuo</div><div class="v">El residuo a clasificar. Tiene 10 disfraces: uno normal y uno de error por cada tipo.</div></div>
+    <div class="card"><div class="k"><span class="chip">🗑️</span>basura</div><div class="v">Contenedor de basura común.</div></div>
+    <div class="card"><div class="k"><span class="chip">🍾</span>vidrio</div><div class="v">Contenedor de vidrio.</div></div>
+    <div class="card"><div class="k"><span class="chip">🍎</span>organico</div><div class="v">Contenedor de residuos orgánicos.</div></div>
+    <div class="card"><div class="k"><span class="chip">📄</span>papel</div><div class="v">Contenedor de papel.</div></div>
+    <div class="card"><div class="k"><span class="chip">🧴</span>plastico</div><div class="v">Contenedor de plástico.</div></div>
+  </div>
+</section>
+
+<section id="datos">
+  <span class="snum">04</span>
+  <h2>Variables y mensajes</h2>
+  <p>Las <b>variables</b> guardan datos que cambian durante el juego. Los <b>mensajes</b> sirven para que un objeto le avise algo a los demás.</p>
+  <div class="grid">
+    <div class="card"><div class="k"><span class="chip">🔢</span>Residuo</div><div class="v">Variable. Guarda un número del 1 al 5 que indica qué tipo de residuo salió: 1 basura, 2 vidrio, 3 orgánico, 4 papel, 5 plástico.</div></div>
+    <div class="card"><div class="k"><span class="chip">⭐</span>Puntos</div><div class="v">Variable. Cuenta los aciertos.</div></div>
+    <div class="card"><div class="k"><span class="chip">🔁</span>Nueva Ronda</div><div class="v">Mensaje. Avisa que empieza una ronda nueva: se sortea otro residuo y todo vuelve a su lugar.</div></div>
+    <div class="card"><div class="k"><span class="chip">⚠️</span>ERROR</div><div class="v">Mensaje. Avisa que el residuo se tiró en el contenedor equivocado.</div></div>
+  </div>
+</section>
+
+<section id="codigo">
+  <span class="snum">05</span>
+  <h2>El código, objeto por objeto</h2>
+  <p>Los bloques están dibujados con los mismos colores que en Scratch. El color dice a qué categoría pertenece cada bloque:</p>
+  <div class="legend">
+    <span style="background:var(--ev)">Eventos</span>
+    <span style="background:var(--ctrl)">Control</span>
+    <span style="background:var(--mot)">Movimiento</span>
+    <span style="background:var(--look)">Apariencia</span>
+    <span style="background:var(--var)">Variables</span>
+    <span style="background:var(--sens)">Sensores</span>
+    <span style="background:var(--op)">Operadores</span>
+  </div>
+
+  <h3>Objeto: persona</h3>
+  <p class="muted">Se mueve con las flechas, da la bienvenida al empezar y avisa cuando el residuo va al lugar equivocado.</p>
+  <div id="sc-persona"></div>
+
+  <h3>Objetos: los cinco contenedores</h3>
+  <p class="muted">Cada contenedor solo se ubica en su lugar al empezar. Son cinco programas iguales; lo único que cambia son las coordenadas.</p>
+  <div id="sc-bins"></div>
+
+  <h3>Objeto: residuo</h3>
+  <p class="muted">Es el objeto principal, el que tiene toda la lógica del juego. Acompaña al personaje y, cada vez que empieza una ronda, se sortea qué residuo va a ser.</p>
+  <div id="sc-residuo"></div>
+</section>
+
+<section id="tecla-e">
+  <span class="snum">06</span>
+  <h2>El programa de la tecla E</h2>
+  <p>Este es el corazón del juego. Cuando se presiona <b>E</b>, el programa primero mira la variable <b>Residuo</b> para saber qué tipo salió, y recién ahí comprueba si está tocando el contenedor correcto.</p>
+  <p>Los bloques <b>si / si no</b> están puestos uno adentro del otro a propósito. Así se ejecuta una sola de las cinco ramas: si el residuo es vidrio, ni siquiera se comprueban las de papel o plástico.</p>
+  <div id="sc-tecla-e"></div>
+</section>
+
+<section id="probar">
+  <span class="snum">07</span>
+  <h2>Probar la lógica</h2>
+  <p>Acá se puede simular una ronda sin abrir Scratch, para ver cómo el programa decide. Sorteá un residuo y después elegí un contenedor: abajo se marca el camino que sigue el programa.</p>
+
+  <div class="sim">
+    <div class="sim-stage">
+      <span class="sim-res" id="simEmoji">❔</span>
+      <div class="sim-label" id="simLabel">Todavía no se sorteó ningún residuo.</div>
+    </div>
+    <button class="btn" id="btnRoll">Sortear residuo</button>
+    <button class="btn ghost" id="btnReset" style="margin-left:8px">Reiniciar</button>
+
+    <div class="bins" id="bins" aria-label="Contenedores">
+      <button class="bin" data-bin="1" disabled><em>🗑️</em>basura</button>
+      <button class="bin" data-bin="2" disabled><em>🍾</em>vidrio</button>
+      <button class="bin" data-bin="3" disabled><em>🍎</em>organico</button>
+      <button class="bin" data-bin="4" disabled><em>📄</em>papel</button>
+      <button class="bin" data-bin="5" disabled><em>🧴</em>plastico</button>
+    </div>
+
+    <div class="trace" id="trace" aria-live="polite"></div>
+    <div class="verdict" id="verdict" role="status"></div>
+    <p class="sr-note">Puntos en esta simulación: <b id="simPts">0</b></p>
+  </div>
+</section>
+
+<section id="ronda">
+  <span class="snum">08</span>
+  <h2>Cómo se reinicia la ronda</h2>
+  <p>Esta es la parte que hace que el juego siga después de cada acierto, en lugar de terminarse.</p>
+  <div class="flow">
+    <div class="flow-step">Quien juega acierta el contenedor. El residuo se desliza adentro, suma un punto y se esconde.</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">El objeto <b>residuo</b> envía el mensaje <b>Nueva Ronda</b>.</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">Ese mismo objeto recibe el mensaje: se muestra de nuevo, sortea otro número del 1 al 5, vuelve abajo a la izquierda y se pone el disfraz que corresponde.</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">El objeto <b>persona</b> también recibe <b>Nueva Ronda</b> y vuelve a su posición inicial.</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">El juego queda listo para clasificar el residuo siguiente.</div>
+  </div>
+  <p>La ventaja de usar un mensaje en lugar de repetir los bloques es que el armado de la ronda está escrito una sola vez y se puede llamar desde donde haga falta: desde la bandera verde al empezar, y desde el acierto para continuar.</p>
+</section>
+
+<section id="conceptos">
+  <span class="snum">09</span>
+  <h2>Conceptos de programación que se trabajaron</h2>
+  <div class="tags">
+    <span>Variables: guardar y modificar datos</span>
+    <span>Números al azar</span>
+    <span>Condicionales anidados</span>
+    <span>Operadores de comparación</span>
+    <span>Sensores de contacto</span>
+    <span>Mensajes entre objetos</span>
+    <span>Eventos: bandera, teclas y mensajes</span>
+    <span>Coordenadas x e y</span>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Juego del Reciclaje · proyecto en Scratch. El código de esta página está transcrito directamente del archivo .sb3, bloque por bloque.
+  </div>
+</footer>
+
+<script>
+/* ---------- renderizador de bloques ---------- */
+const H = (c, t) => ({k:'b', c, t});
+const HAT = (c, t) => ({k:'hat', c, t});
+const IF = (cond, body, body2) => ({k:'if', cond, body, body2});
+
+function render(list){
+  const wrap = document.createElement('div');
+  wrap.className = 'stack';
+  list.forEach(n => {
+    if(n.k === 'if'){
+      const cb = document.createElement('div');
+      cb.className = 'cblock';
+      const top = document.createElement('div');
+      top.className = 'block b-ctrl';
+      top.innerHTML = 'si ' + n.cond + ' entonces';
+      cb.appendChild(top);
+      const body = document.createElement('div');
+      body.className = 'cbody';
+      body.appendChild(render(n.body));
+      cb.appendChild(body);
+      if(n.body2){
+        const mid = document.createElement('div');
+        mid.className = 'cmid';
+        mid.textContent = 'si no';
+        cb.appendChild(mid);
+        const b2 = document.createElement('div');
+        b2.className = 'cbody';
+        b2.appendChild(render(n.body2));
+        cb.appendChild(b2);
+      }
+      const foot = document.createElement('div');
+      foot.className = 'cfoot';
+      cb.appendChild(foot);
+      wrap.appendChild(cb);
+    } else {
+      const b = document.createElement('div');
+      b.className = 'block b-' + n.c + (n.k === 'hat' ? ' hat' : '');
+      b.innerHTML = n.t;
+      wrap.appendChild(b);
+    }
+  });
+  return wrap;
+}
+function script(target, caption, blocks){
+  const box = document.createElement('div');
+  box.className = 'script';
+  const cap = document.createElement('div');
+  cap.className = 'script-cap';
+  cap.textContent = caption;
+  box.appendChild(cap);
+  box.appendChild(render(blocks));
+  document.getElementById(target).appendChild(box);
+}
+const N = v => '<span class="rep num">' + v + '</span>';
+const M = v => '<span class="rep menu">' + v + '</span>';
+const V = v => '<span class="rep varname">' + v + '</span>';
+const B = v => '<span class="rep bool">' + v + '</span>';
+
+/* ---------- persona ---------- */
+script('sc-persona', 'Moverse a la derecha', [
+  HAT('ev','al presionar tecla ' + M('flecha derecha')),
+  H('mot','mover ' + N(10) + ' pasos')
+]);
+script('sc-persona', 'Moverse a la izquierda', [
+  HAT('ev','al presionar tecla ' + M('flecha izquierda')),
+  H('mot','mover ' + N(-10) + ' pasos')
+]);
+script('sc-persona', 'Al empezar: puntos en cero, posición inicial e instrucciones', [
+  HAT('ev','al presionar ' + M('bandera verde')),
+  H('var','fijar ' + V('Puntos') + ' a ' + N(0)),
+  H('mot','ir a x: ' + N(-212) + ' y: ' + N(-48)),
+  H('look','decir ' + M('Bienvenidos a el juego del reciclaje') + ' por ' + N(2) + ' segundos'),
+  H('look','decir ' + M('Para poder tirar la basura donde corresponde') + ' por ' + N(4) + ' segundos'),
+  H('look','decir ' + M('tocando la E con la basura en la mano…') + ' por ' + N(4) + ' segundos')
+]);
+script('sc-persona', 'Cuando el residuo va al contenedor equivocado', [
+  HAT('ev','al recibir ' + M('ERROR')),
+  H('look','decir ' + M('No se puede tirar aqui') + ' por ' + N(2) + ' segundos')
+]);
+script('sc-persona', 'Al empezar cada ronda vuelve a su lugar', [
+  HAT('ev','al recibir ' + M('Nueva Ronda')),
+  H('mot','ir a x: ' + N(-212) + ' y: ' + N(-48))
+]);
+
+/* ---------- contenedores ---------- */
+[['basura',194,-11],['vidrio',23,-10],['organico',111,1],['papel',-16,3],['plastico',-54,-16]]
+.forEach(([name,x,y]) => {
+  script('sc-bins', 'Objeto ' + name, [
+    HAT('ev','al presionar ' + M('bandera verde')),
+    H('mot','ir a x: ' + N(x) + ' y: ' + N(y))
+  ]);
+});
+
+/* ---------- residuo ---------- */
+script('sc-residuo', 'Acompaña al personaje hacia la izquierda', [
+  HAT('ev','al presionar tecla ' + M('flecha izquierda')),
+  H('mot','mover ' + N(-10) + ' pasos')
+]);
+script('sc-residuo', 'Acompaña al personaje hacia la derecha', [
+  HAT('ev','al presionar tecla ' + M('flecha derecha')),
+  H('mot','mover ' + N(10) + ' pasos')
+]);
+script('sc-residuo', 'Al empezar solo avisa que arranca la primera ronda', [
+  HAT('ev','al presionar ' + M('bandera verde')),
+  H('ev','enviar ' + M('Nueva Ronda'))
+]);
+script('sc-residuo', 'Armado de la ronda: sortea el residuo y le pone el disfraz', [
+  HAT('ev','al recibir ' + M('Nueva Ronda')),
+  H('look','mostrar'),
+  H('var','fijar ' + V('Residuo') + ' a ' + '<span class="rep bool" style="background:var(--op)">número al azar entre ' + N(1) + ' y ' + N(5) + '</span>'),
+  H('mot','ir a x: ' + N(-171) + ' y: ' + N(-80)),
+  IF(B(V('Residuo') + ' = ' + N(1)), [H('look','cambiar disfraz a ' + M('Basura'))]),
+  IF(B(V('Residuo') + ' = ' + N(2)), [H('look','cambiar disfraz a ' + M('vidrio'))]),
+  IF(B(V('Residuo') + ' = ' + N(3)), [H('look','cambiar disfraz a ' + M('organico'))]),
+  IF(B(V('Residuo') + ' = ' + N(4)), [H('look','cambiar disfraz a ' + M('papel'))]),
+  IF(B(V('Residuo') + ' = ' + N(5)), [H('look','cambiar disfraz a ' + M('Plastico'))])
+]);
+
+/* ---------- tecla E ---------- */
+const acierto = (x,y) => [
+  H('mot','deslizar en ' + N(1) + ' seg a x: ' + N(x) + ' y: ' + N(y)),
+  H('var','cambiar ' + V('Puntos') + ' en ' + N(1)),
+  H('look','esconder'),
+  H('ev','enviar ' + M('Nueva Ronda'))
+];
+const error = (dis) => [
+  H('look','cambiar disfraz a ' + M(dis)),
+  H('ev','enviar ' + M('ERROR'))
+];
+const rama = (n, obj, x, y, dis, resto) => IF(
+  B(V('Residuo') + ' = ' + N(n)),
+  [ IF(B('¿tocando ' + M(obj) + '?'), acierto(x,y), error(dis)) ],
+  resto
+);
+script('sc-tecla-e', 'Tirar el residuo', [
+  HAT('ev','al presionar tecla ' + M('e')),
+  rama(1,'basura',175,30,'Basura2', [
+    rama(2,'vidrio',24,44,'vidrio2', [
+      rama(3,'organico',89,37,'organico2', [
+        rama(4,'papel',-54,31,'papel2', [
+          rama(5,'plastico',-135,28,'Plastico2', [ H('ev','enviar ' + M('ERROR')) ])
+        ])
+      ])
+    ])
+  ])
+]);
+
+/* ---------- simulador ---------- */
+const TIPOS = {
+  1:{n:'basura',  e:'🗑️', d:'Basura'},
+  2:{n:'vidrio',  e:'🍾', d:'vidrio'},
+  3:{n:'organico',e:'🍎', d:'organico'},
+  4:{n:'papel',   e:'📄', d:'papel'},
+  5:{n:'plastico',e:'🧴', d:'Plastico'}
+};
+let actual = null, puntos = 0;
+const $ = id => document.getElementById(id);
+
+function pintarTrace(elegido){
+  const t = $('trace');
+  t.innerHTML = '';
+  for(let i = 1; i <= 5; i++){
+    const row = document.createElement('div');
+    const esta = (i === actual);
+    row.className = 'trace-row ' + (actual === null ? '' : esta ? 'on' : 'off');
+    let txt = 'si Residuo = ' + i + ' → ' + TIPOS[i].n;
+    let mark = '·';
+    if(actual !== null){
+      mark = esta ? '✓' : '✗';
+      if(esta && elegido !== undefined){
+        txt += '  →  ¿tocando ' + TIPOS[elegido].n + '? ' +
+               (elegido === actual ? 'sí, suma un punto' : 'no, disfraz ' + TIPOS[actual].d + '2 y mensaje ERROR');
+      }
+    }
+    row.innerHTML = '<span class="mark">' + mark + '</span><span>' + txt + '</span>';
+    t.appendChild(row);
+  }
+}
+function bins(on){
+  document.querySelectorAll('.bin').forEach(b => b.disabled = !on);
+}
+$('btnRoll').addEventListener('click', () => {
+  actual = Math.floor(Math.random() * 5) + 1;
+  $('simEmoji').textContent = TIPOS[actual].e;
+  $('simLabel').innerHTML = 'Salió <b>' + TIPOS[actual].n + '</b>. La variable Residuo vale <b>' + actual + '</b> y el disfraz es <b>' + TIPOS[actual].d + '</b>.';
+  $('verdict').className = 'verdict';
+  bins(true);
+  pintarTrace();
+});
+document.querySelectorAll('.bin').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const elegido = +btn.dataset.bin;
+    const ok = elegido === actual;
+    pintarTrace(elegido);
+    const v = $('verdict');
+    if(ok){
+      puntos++;
+      $('simPts').textContent = puntos;
+      v.className = 'verdict win';
+      v.textContent = '¡Correcto! El residuo se desliza al contenedor, suma un punto y se envía el mensaje Nueva Ronda.';
+      $('simEmoji').textContent = '✅';
+      $('simLabel').textContent = 'Sorteá otro residuo para seguir jugando.';
+    } else {
+      v.className = 'verdict lose';
+      v.textContent = 'Ahí no va. El residuo se pone en su disfraz de error y el personaje dice “No se puede tirar aqui”. Probá otro contenedor.';
+    }
+    if(ok){ actual = null; bins(false); }
+  });
+});
+$('btnReset').addEventListener('click', () => {
+  actual = null; puntos = 0;
+  $('simPts').textContent = '0';
+  $('simEmoji').textContent = '❔';
+  $('simLabel').textContent = 'Todavía no se sorteó ningún residuo.';
+  $('verdict').className = 'verdict';
+  $('trace').innerHTML = '';
+  bins(false);
+});
+</script>
+</body>
+</html>
